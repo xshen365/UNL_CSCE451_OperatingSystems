@@ -1,0 +1,170 @@
+What this is for
+~~~~~~~~~~~~~~~~~~~~~~~
+
+In case you do prefer to write the code form scratch, please feel free do to so. Hopefully you will still find something useful in this file. 
+
+What is this about
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The purpose of the accompanying code is to do away with the grunt work of parsing the string and extracting commands to execute. Rather we would like to focus on the more fun aspects of Process Management. We will get familiar with some basic process management tasks like
+
+    - Process Creation 
+    - Inter process communication 
+    - Process Control 
+    - Process Termination 
+    
+-------------------------------------------------------------------------------
+
+Data types
+~~~~~~~~~~~~~~~~~~~~~~
+
+We parse the input (the user provided string) to a linked list of modules (Command structures). The Command structure contains the basic information to work with the above mentioned tasks. 
+
+typedef struct Command {
+    char *file;             // file to execute 
+    char **arglist;         // argument list to executable
+    SymbolType symbolType;  // command seperator 
+
+    int inFileHandle;       // file handle to input stream 
+    int outFileHandle;      // file handle to output stream
+    int errorFileHandle;    // file handle to error stream 
+    int status;             // exit code of the commnad
+
+    struct Command *next, *prev;   
+} Command;
+
+
+We use the following constans to denote the redirection operators. 
+typedef enum SymbolType {
+    RedirectIn,             // <
+    RedirectOut,            // >
+    RedirectOutAppend,      // >>
+    ExecuteOnSuccess,         // && - exec on success
+    ExecuteOnFailure,          // || - exec on failure 
+    Pipe,                   // | 
+    Null,                   // end of string (null character encountered)
+    NewLine,                // end of command due to new line
+    Semicolon,              // ;
+} SymbolType;
+
+
+Consider the following examples to see how the input is represented by commands (doubly linked list)
+eg: 
+
+osh> ps | grep troll && echo security breach we are overrun by trolls > superImportantUrgentMail.txt
+Command1:
+    file: ps 
+    arglist: 
+    symbolType: 6
+    next: command2
+    prev: Null
+
+Command2:
+    file: grep
+    arglist: troll
+    symbolType: 5
+    next: Command3
+    prev: Command1
+
+Command3:
+    file: echo
+    arglist: security breach we are overrun by trolls
+    symbolType: 2
+    next: Command4
+    prev: Command2
+
+Command4:
+    file: superImportantUrgentMail.txt
+    arglist: 
+    symbolType:9
+    next: Null
+    prev: Commmand3 
+
+
+Note:
+    One important thing to observe is that we use the same field (file) to contain both the executable (who, grep, echo) and output/input file in case of redirection. The user needs to explicitly needs to read the symbol of the previous command and interpret if file is a data file or a executable. 
+    The end of the command chain is indicated by the Null pointer at the next field. 
+    This also handles an empty line (or line with white spaces)
+
+--------------------------------------------------------------------------------
+
+API
+~~~~~~~~~
+
+int GetCommandChain(Command **head);
+The above api will read a line from the input and parse it as command. The user provides the pointer to the Command structure, which would be updated by the function to point to the head of the list. 
+
+int DeleteCommandChain(Command *head);
+This will delete all the Command structures in the linked list. Currently this only works if we pass the head of the list. 
+
+int DumpCommandChain(Command *command);
+This will display the contents of each of the commands. 
+
+----------------------------------------------------------------------------------
+
+Sample usage 
+~~~~~~~~~~~~~~~~~~~~
+
+int main(int argc, char *argv[])
+{
+    // Command structure
+    Command *head = NULL;
+
+    // get the command chain   
+    if(status_failure != GetCommandChain(&head)) {
+        DumpCommandChain(head);
+        DeleteCommandChain(head);
+    }
+
+    return status_success;
+}
+
+
+---------------------------------------------------------------------------------------
+
+How to use this in code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The above code simplifies handling of parsing the user input. 
+
+int main(int argc, char* argv[])
+{
+    Command *head;
+    bool exitloop = false;
+
+    while (false == exitloop) {
+        if(status_failure == GetCommandChain(&head)) {
+            // handle error and exit
+        }
+
+        for (each command in commandchain) {
+            if(command == exit) {
+                exitloop = true;
+                break out of loop and exit program
+            }
+
+            // -- create process, setup inprocess communication (file handles for input/output) etc
+            // -- and other process management tasks
+        }
+
+        // done with current line. delete the command chain
+        DeleteCommandChain(head);
+    }
+
+    return 0;
+}
+
+---------------------------------------------------------------------------------------
+
+Known Issues:
+~~~~~~~~~~~~~~~~~~
+- the cannot handle if the the single command is broken into multiple lines
+- this cannot handle single or double quotes 
+- there is a small memory leak, shouldn't be a big deal as of now
+
+---------------------------------------------------------------------------------------
+
+Contact 
+~~~~~~~~~~
+
+In case if you find any issues (which I'm sure you would), please feel free to send me a mail at : rputtaswamy@cse.unl.edu

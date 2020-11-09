@@ -1,0 +1,6 @@
+.tm_properties
+.DS_Store
+doxygen_doc
+*.swp
+*.o
+osh

@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/jian/Desktop/PA4/code/list.h
+pthread.h
+-
+
+/Users/jian/Desktop/PA4/code/scheduler.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+unistd.h
+-
+errno.h
+-
+time.h
+-
+signal.h
+-
+scheduler.h
+/Users/jian/Desktop/PA4/code/scheduler.h
+worker.h
+/Users/jian/Desktop/PA4/code/worker.h
+
+/Users/jian/Desktop/PA4/code/scheduler.h
+pthread.h
+-
+semaphore.h
+-
+list.h
+/Users/jian/Desktop/PA4/code/list.h
+
+/Users/jian/Desktop/PA4/code/worker.h
+

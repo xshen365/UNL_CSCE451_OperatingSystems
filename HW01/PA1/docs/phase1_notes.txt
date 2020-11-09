@@ -1,0 +1,43 @@
+The key to this assignment is correctly parsing the input line and building a data structure to represent the parsed data. There is a lot of booking in this program, opening various files, in various modes, etc. If you are able to tokenize the input(command) line and represent it in a list of objects or structures the rest of the program gets significantly easier. 
+
+Consider the following recommendations below: 
+ - consider using fgets() or read() to read the input since cin() and scanf() break up the input on white spaces. This is not desirable, since it will not be possible to distinguish between spaces separating command and arguments from newlines separating commands.
+ - consider using the strsep() library function to break up the input line into tokens. To simplify token matching, all tokens will be space separated i.e. you don’t have to deal with input like: ls <intput|get 
+ - consider using a linked list structure such as the Command struct given in comm.h for C programmers or a similar structure for C++ programmers.
+ - consider using a linked list structure such as the Arg structure in comm.h to represent the parsed command and arguments. 
+
+In phase 1, the program should correctly parse the input string, identify malformed commands and when complete, the internal command structure should be shown. 
+
+You will also need to write a function to build the argv structure. Argv (char **argv) is a null terminated array of strings and is represented by the figure below. The pseudo code to build an array of strings follows. 
+
+char ** BuildArgv(Arg *arg_list) {
+
+     char **argv;
+     int argc;
+ 
+     /*
+      * Compute argc
+      */
+     snip.. snip.. snip.. 
+ 
+     /*
+      * Malloc/New the space for argv - Select one! - Note the + 1 for the null pointer.
+      */
+     argv = (char **)(malloc(sizeof(char *) * argc + 1 )); /* C  malloc*/
+     argv = new char*[argc+1]; /* C++ new  */
+ 
+     /*
+      * Make the argv pointers point to the strings in arg_list
+      */
+     for (argc = 0; tmp_list != NULL ; argc++) {
+         argv[argc] = snip.. snip.. snip.. 
+     }
+ 
+     /*
+      * Terminate the argv structure with a Null as shown in
+      * the above figure.
+      */
+ 
+     argv[argc] = NULL;
+     return (argv);
+}
